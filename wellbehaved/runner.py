@@ -16,6 +16,10 @@ from behave.configuration import Configuration
 class DjangoBDDTestCase(TestCase):
     def __init__(self, *args, **kwargs):
         self.behaviour_dir = kwargs.pop('behaviour_dir')
+        
+        initial_fixtures = getattr(settings, 'WELLBEHAVED_INITIAL_FIXTURES', [])
+        assert isinstance(initial_fixtures, list), 'WELLBEHAVED_INITIAL_FIXTURES should be list of strings!'
+        self.fixtures = initial_fixtures
 
         super(DjangoBDDTestCase, self).__init__(**kwargs)
 

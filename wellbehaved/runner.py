@@ -40,10 +40,14 @@ class DjangoBDDTestCase(TestCase):
         # Пробуем получить язык, на котором написаны сценарии для behave
         self.behave_configuration.lang = getattr(settings, 'WELLBEHAVED_LANG', 'ru')
 
+        reload(sys)
+        sys.setdefaultencoding('cp866')        
+
     def runTest(self, result=None):
         runner = Runner(self.behave_configuration)
+        test_failed = runner.run()
 
-        assert runner.run(), 'BDD test has failed.'
+        assert not test_failed, 'BDD test has failed.'
 
 
 class DjangoBDDTestSuiteRunner(DjangoTestSuiteRunner):

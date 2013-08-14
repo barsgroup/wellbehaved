@@ -4,6 +4,7 @@ import os
 import sys
 import unittest
 
+from django.db import transaction
 from django.db.models import get_app
 from django.test import TestCase
 from django.test.simple import DjangoTestSuiteRunner, reorder_suite
@@ -11,6 +12,52 @@ from django.conf import settings
 
 from behave.runner import Runner
 from behave.configuration import Configuration
+
+
+class HookDictWrapper(dict):
+    def __init__(self, wrapped):
+        self.wrapped = wrapped
+        for hook, handler in self.wrapped.items():
+            super(HookDictWrapper, self).__setitem__(hook, handler)
+
+    def __setitem__(self, hook, handler):
+        def wrap_hook(name, original_hook):
+            def wrapper(*args, **kwargs):
+                self.wrapped[name](*args, **kwargs)
+                original_hook(*args, **kwargs)
+            return wrapper
+
+        if hook in self.wrapped:
+            super(HookDictWrapper, self).__setitem__(hook, wrap_hook(hook, handler))
+        else:
+            super(HookDictWrapper, self).__setitem__(hook, handler)
+
+
+class CustomBehaveRunner(Runner):
+    def create_savepoint_before_all(self, context):
+        # Т.к. behave применяет содержимое Background (Предыстория)
+        # перед каждым сценарием, мы создаем точку отката транзакции
+        # для возврата базы в изначальное состояние после отработки
+        # сценария    
+        context.__initial_savepoint = transaction.savepoint()
+
+    def restore_savepoint_after_scenario(self, context, scenario):
+        # Восстанавливаем данные после прохода сценария
+        transaction.savepoint_rollback(context.__initial_savepoint)
+
+    def __init__(self, config):
+        super(CustomBehaveRunner, self).__init__(config)
+
+        chosen_rollback_mode = getattr(settings, 'WELLBEHAVED_INITIAL_FIXTURES', 'partial')
+        # Режим отката БД
+        rollback_hooks = {
+            'partial': {
+                'after_scenario': self.restore_savepoint_after_scenario,
+                'before_all': self.create_savepoint_before_all
+            },
+            'manual': {}
+        }
+        self.hooks = HookDictWrapper(rollback_hooks[chosen_rollback_mode])
 
 
 class DjangoBDDTestCase(TestCase):
@@ -44,7 +91,7 @@ class DjangoBDDTestCase(TestCase):
         sys.setdefaultencoding('cp866')        
 
     def runTest(self, result=None):
-        runner = Runner(self.behave_configuration)
+        runner = CustomBehaveRunner(self.behave_configuration)
         test_failed = runner.run()
 
         assert not test_failed, 'BDD test has failed.'

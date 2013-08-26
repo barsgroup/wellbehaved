@@ -48,7 +48,7 @@ class CustomBehaveRunner(Runner):
     def __init__(self, config):
         super(CustomBehaveRunner, self).__init__(config)
 
-        chosen_rollback_mode = getattr(settings, 'WELLBEHAVED_INITIAL_FIXTURES', 'partial')
+        chosen_rollback_mode = getattr(settings, 'WELLBEHAVED_ROLLBACK_MODE', 'partial')
         # Режим отката БД
         rollback_hooks = {
             'partial': {

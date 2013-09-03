@@ -4,10 +4,11 @@ import os
 import sys
 import unittest
 
-from django.db import transaction
+from django.db import transaction, connections, DEFAULT_DB_ALIAS
 from django.db.models import get_app
 from django.test import TestCase
 from django.test.simple import DjangoTestSuiteRunner, reorder_suite
+from django.test.testcases import disable_transaction_methods, restore_transaction_methods
 from django.conf import settings
 
 from behave.runner import Runner
@@ -38,7 +39,7 @@ class CustomBehaveRunner(Runner):
         # Т.к. behave применяет содержимое Background (Предыстория)
         # перед каждым сценарием, мы создаем точку отката транзакции
         # для возврата базы в изначальное состояние после отработки
-        # сценария    
+        # сценария
         context.__initial_savepoint = transaction.savepoint()
 
     def restore_savepoint_after_scenario(self, context, scenario):
@@ -63,12 +64,37 @@ class CustomBehaveRunner(Runner):
 class DjangoBDDTestCase(TestCase):
     def __init__(self, *args, **kwargs):
         self.behaviour_dir = kwargs.pop('behaviour_dir')
-        
-        initial_fixtures = getattr(settings, 'WELLBEHAVED_INITIAL_FIXTURES', [])
-        assert isinstance(initial_fixtures, list), 'WELLBEHAVED_INITIAL_FIXTURES should be list of strings!'
-        self.fixtures = initial_fixtures
+        self.use_existing_db = kwargs.pop('use_existing_db')
+    
+        if not self.use_existing_db:    
+            initial_fixtures = getattr(settings, 'WELLBEHAVED_INITIAL_FIXTURES', [])
+            assert isinstance(initial_fixtures, list), 'WELLBEHAVED_INITIAL_FIXTURES should be list of strings!'
+            self.fixtures = initial_fixtures
+
+        if getattr(self, 'multi_db', False):
+            self.databases = connections
+        else:
+            self.databases = [DEFAULT_DB_ALIAS]
 
         super(DjangoBDDTestCase, self).__init__(**kwargs)
+
+    def _fixture_setup(self):
+        if not self.use_existing_db:
+            super(DjangoBDDTestCase, self)._fixture_setup()
+
+        for db in self.databases:
+            transaction.enter_transaction_management(using=db)
+            transaction.managed(True, using=db)
+        disable_transaction_methods()
+
+    def _fixture_teardown(self):
+        if not self.use_existing_db:
+            super(DjangoBDDTestCase, self)._fixture_teardown()
+
+        restore_transaction_methods()
+        for db in self.databases:
+            transaction.rollback(using=db)
+            transaction.leave_transaction_management(using=db)             
 
     def setUp(self):
         # Так как behave пытается обрабатывать аргументы командной строки
@@ -100,16 +126,31 @@ class DjangoBDDTestCase(TestCase):
 class DjangoBDDTestSuiteRunner(DjangoTestSuiteRunner):
 
     def build_suite(self, test_apps, extra_tests=None, **kwargs):
+        self.use_existing_db = getattr(settings, 'WELLBEHAVED_USE_EXISTING_DB', False)
+
         suite = unittest.TestSuite()
         std_django_suite = DjangoTestSuiteRunner().build_suite(test_apps, **kwargs)
         suite.addTest(std_django_suite)
 
         for app_name in test_apps:
             app = get_app(app_name)
-
             module_path = os.path.dirname(app.__file__)
             behaviour_path = os.path.join(module_path, 'features')
             if os.path.isdir(behaviour_path):
-                suite.addTest(DjangoBDDTestCase(behaviour_dir=behaviour_path))
+                suite.addTest(DjangoBDDTestCase(behaviour_dir=behaviour_path,
+                                                use_existing_db=self.use_existing_db))
 
         return reorder_suite(suite, (TestCase,))
+
+    def run_tests(self, test_labels, extra_tests=None, **kwargs):
+        self.setup_test_environment()
+        suite = self.build_suite(test_labels, extra_tests)
+
+        if not self.use_existing_db:
+            old_config = self.setup_databases()
+            result = self.run_suite(suite)
+            self.teardown_databases(old_config)
+        else:
+            result = self.run_suite(suite)
+
+        return self.suite_result(suite, result)

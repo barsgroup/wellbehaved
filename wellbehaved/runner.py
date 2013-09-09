@@ -16,12 +16,31 @@ from behave.configuration import Configuration
 
 
 class HookDictWrapper(dict):
+    u'''
+    Класс, "прозрачно" перехватывающий установку обработчиков шагов 
+    тестирования в environment.py. В случае, если мы тоже обрабатываем
+    этот шаг, то мы оборачиваем переданный обработчик таким образом,
+    что наш код всегда испольняется первым.
+
+    На данный момент используется для гарантирования срабатывания кода
+    частичного отката изменения после прохождения шага сценария.
+    '''
+
     def __init__(self, wrapped):
         self.wrapped = wrapped
+        # По умолчанию устанавливаем свои обработчики шагов
         for hook, handler in self.wrapped.items():
             super(HookDictWrapper, self).__setitem__(hook, handler)
 
     def __setitem__(self, hook, handler):
+        '''
+        Перехватчик установки обработчика очередного шага пользовательским
+        кодом. Устанавливаемый обработчик будет всегда выполнятся после нашего.
+
+        :param hook: Код события ([after|before]_[feature|step|scenario|tag|all])
+        :param handler: Обработчик события из environment.py
+        '''
+
         def wrap_hook(name, original_hook):
             def wrapper(*args, **kwargs):
                 self.wrapped[name](*args, **kwargs)
@@ -36,22 +55,35 @@ class HookDictWrapper(dict):
 
 class CustomBehaveRunner(Runner):
     def create_savepoint_before_all(self, context):
-        # Т.к. behave применяет содержимое Background (Предыстория)
-        # перед каждым сценарием, мы создаем точку отката транзакции
-        # для возврата базы в изначальное состояние после отработки
-        # сценария
+        u'''
+        Обработчик, срабатывающий перед началом выполнения feature.
+
+        Так как behave применяет содержимое Background (Предыстория)
+        перед каждым сценарием, мы создаем точку отката транзакции
+        для возврата базы в изначальное состояние после отработки
+        сценария.
+
+        :param context: Контекстная информация текущего шага.
+        '''
         context.__initial_savepoint = transaction.savepoint()
 
     def restore_savepoint_after_scenario(self, context, scenario):
-        # Восстанавливаем данные после прохода сценария
+        u'''
+        Обработчик, срабатывающий после отработки сценария в feature.
+        
+        Восстанавливаем данные после прохода сценария, откатившись
+        внутри транзакции на заранее сохраненную точку (самое начало
+        обработки feature). 
+        '''
         transaction.savepoint_rollback(context.__initial_savepoint)
 
     def __init__(self, config):
         super(CustomBehaveRunner, self).__init__(config)
 
         chosen_rollback_mode = getattr(settings, 'WELLBEHAVED_ROLLBACK_MODE', 'partial')
-        # Режим отката БД
+        # Режим отката изменений в БД
         rollback_hooks = {
+            # Режим частичного восстановленияи, когда 
             'partial': {
                 'after_scenario': self.restore_savepoint_after_scenario,
                 'before_all': self.create_savepoint_before_all
@@ -66,7 +98,7 @@ class DjangoBDDTestCase(TestCase):
         self.behaviour_dir = kwargs.pop('behaviour_dir')
         self.use_existing_db = kwargs.pop('use_existing_db')
     
-        if not self.use_existing_db:    
+        if not self.use_existing_db:
             initial_fixtures = getattr(settings, 'WELLBEHAVED_INITIAL_FIXTURES', [])
             assert isinstance(initial_fixtures, list), 'WELLBEHAVED_INITIAL_FIXTURES should be list of strings!'
             self.fixtures = initial_fixtures
@@ -79,6 +111,11 @@ class DjangoBDDTestCase(TestCase):
         super(DjangoBDDTestCase, self).__init__(**kwargs)
 
     def _fixture_setup(self):
+        u'''
+        Здесь мы вынужденно перекрываем метод загрузки данных 
+        из фикстур и дублируем часть его кода, т.к. monkey
+        patching модуля транзакций зачем-то разместили здесь (sic!).
+        '''
         if not self.use_existing_db:
             super(DjangoBDDTestCase, self)._fixture_setup()
 
@@ -88,6 +125,11 @@ class DjangoBDDTestCase(TestCase):
         disable_transaction_methods()
 
     def _fixture_teardown(self):
+        u'''
+        Здесь мы вынужденно перекрываем метод снесения данных 
+        из фикстур и дублируем часть его кода, т.к. восстановление
+        методов транзакций зачем-то было помещено в него (sic!).
+        '''
         if not self.use_existing_db:
             super(DjangoBDDTestCase, self)._fixture_teardown()
 
@@ -106,7 +148,8 @@ class DjangoBDDTestCase(TestCase):
         sys.argv = old_argv
 
         self.behave_configuration.paths = [self.behaviour_dir]
-        self.behave_configuration.format = ['pretty']        
+        self.behave_configuration.format = getattr(settings, 'WELLBEHAVED_FORMATTER', ['pretty'])
+        assert self.behave_configuration.format, 'Formatter settings should be a list!'
         self.behave_configuration.stdout_capture = False
         self.behave_configuration.stderr_capture = False
 

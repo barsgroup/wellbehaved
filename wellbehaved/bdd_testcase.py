@@ -1,5 +1,6 @@
 #coding: utf-8
 
+import os
 import sys
 
 from django.conf import settings
@@ -8,25 +9,46 @@ from django.test import TestCase
 from django.test.testcases import disable_transaction_methods, restore_transaction_methods
 
 from behave.configuration import Configuration
+
 from behave_runner import CustomBehaveRunner
+
+class FeatureDiscovererMetaclass(type):
+    def __new__(cls, clsname, bases, attrs):        
+        def _wrap_run_bdd(func_name, feature_fn):
+            def test_runner(self, **kwargs):
+                self.behave_configuration.paths = [feature_fn]
+                runner = CustomBehaveRunner(self.behave_configuration)
+                test_failed = runner.run()
+                assert test_failed == False, 'BDD test %s has failed!' % func_name
+            return test_runner
+
+        handlers = []
+        for root, dirs, files in os.walk('.'):
+            if root.endswith('features'):
+                features = [fn for fn in files if fn.endswith('.feature')]
+                for feature in features:
+                    handler_name = 'test_%s_feature' % feature[:-8]
+                    attrs[handler_name] = _wrap_run_bdd(handler_name, os.path.join(root, feature))
+                    handlers.append(handler_name)
+        attrs['__feature_handlers'] = handlers
+        return super(FeatureDiscovererMetaclass, cls).__new__(cls, clsname, bases, attrs)
 
 
 class DjangoBDDTestCase(TestCase):
+    __metaclass__ = FeatureDiscovererMetaclass
+
     def __init__(self, *args, **kwargs):
-        self.behaviour_dir = kwargs.pop('behaviour_dir')
-        self.use_existing_db = kwargs.pop('use_existing_db')
-    
+        self.use_existing_db = getattr(settings, 'WELLBEHAVED_USE_EXISTING_DB', False)
         if not self.use_existing_db:
             initial_fixtures = getattr(settings, 'WELLBEHAVED_INITIAL_FIXTURES', [])
             assert isinstance(initial_fixtures, list), 'WELLBEHAVED_INITIAL_FIXTURES should be list of strings!'
-            self.fixtures = initial_fixtures
+            self.fixtures = initial_fixtures        
 
         if getattr(self, 'multi_db', False):
             self.databases = connections
         else:
             self.databases = [DEFAULT_DB_ALIAS]
-
-        super(DjangoBDDTestCase, self).__init__(**kwargs)
+        super(DjangoBDDTestCase, self).__init__(*args, **kwargs)
 
     def _fixture_setup(self):
         u'''
@@ -56,6 +78,9 @@ class DjangoBDDTestCase(TestCase):
             transaction.rollback(using=db)
             transaction.leave_transaction_management(using=db)             
 
+    def id(self):
+        return 'wellbehaved.DjangoBDDTestCase.%s' % self._testMethodName
+
     def setUp(self):
         # Так как behave пытается обрабатывать аргументы командной строки
         # и это пока что (<=1.2.3) не получается отключить, то приходится
@@ -65,7 +90,6 @@ class DjangoBDDTestCase(TestCase):
         self.behave_configuration = Configuration()
         sys.argv = old_argv
 
-        self.behave_configuration.paths = [self.behaviour_dir]
         self.behave_configuration.format = getattr(settings, 'WELLBEHAVED_FORMATTER', ['pretty'])
         assert self.behave_configuration.format, 'Formatter settings should be a list!'
         self.behave_configuration.stdout_capture = False
@@ -77,8 +101,9 @@ class DjangoBDDTestCase(TestCase):
         reload(sys)
         sys.setdefaultencoding('cp866')
 
-    def runTest(self, result=None):
-        runner = CustomBehaveRunner(self.behave_configuration)
-        test_failed = runner.run()
-
-        assert not test_failed, 'BDD test has failed.'
+    def runTest(self):
+        for handler_name in self.feature_runners:
+            test_func = getattr(self, handler_name)
+            test_failed = test_func()
+            if test_failed:
+                failed.append(handler_name)

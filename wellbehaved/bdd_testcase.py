@@ -40,9 +40,10 @@ class DjangoBDDTestCase(TestCase):
     def __init__(self, *args, **kwargs):
         self.use_existing_db = getattr(settings, 'WELLBEHAVED_USE_EXISTING_DB', False)
         if not self.use_existing_db:
-            initial_fixtures = getattr(settings, 'WELLBEHAVED_INITIAL_FIXTURES', [])
-            assert isinstance(initial_fixtures, list), 'WELLBEHAVED_INITIAL_FIXTURES should be list of strings!'
-            self.fixtures = initial_fixtures        
+            initial_fixtures = getattr(settings, 'WELLBEHAVED_INITIAL_FIXTURES', None)
+            if initial_fixtures is not None:
+                assert isinstance(initial_fixtures, list), 'WELLBEHAVED_INITIAL_FIXTURES should be list of strings!'
+                self.fixtures = initial_fixtures        
 
         if getattr(self, 'multi_db', False):
             self.databases = connections
@@ -98,12 +99,7 @@ class DjangoBDDTestCase(TestCase):
         # Пробуем получить язык, на котором написаны сценарии для behave
         self.behave_configuration.lang = getattr(settings, 'WELLBEHAVED_LANG', 'ru')
 
-        reload(sys)
-        sys.setdefaultencoding('cp866')
-
-    def runTest(self):
-        for handler_name in self.feature_runners:
-            test_func = getattr(self, handler_name)
-            test_failed = test_func()
-            if test_failed:
-                failed.append(handler_name)
+        # Установим нормальную кодировку для вывода сообщений в консоль Windows
+        if sys.platform == 'win32':
+            reload(sys)
+            sys.setdefaultencoding('cp866')

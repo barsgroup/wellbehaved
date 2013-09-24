@@ -285,6 +285,7 @@ _.feature_ будет обернут в класс **DjangoBDDTestCase**.
 
 - [Writing Features - Gherkin Language][Writing Features]
 - [Behavior Driven Development (from behave documentation)][Behavior Driven Development]
+- [List of behave formatters][behave Formatters]
 
 [Writing Features]: http://docs.behat.org/guides/1.gherkin.html
 [Behavior Driven Development]: http://pythonhosted.org/behave/philosophy.html

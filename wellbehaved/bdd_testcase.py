@@ -21,12 +21,16 @@ class FeatureDiscovererMetaclass(type):
                 test_failed = runner.run()
                 assert test_failed == False, 'BDD test %s has failed!' % func_name
             return test_runner
-
         handlers = []
-        
-        for root, dirs, files in os.walk('.'):
-            if root.endswith('features'):
-                features = [fn for fn in files if fn.endswith('.feature')]
+
+        search_directories = getattr(settings, 'WELLBEHAVED_SEARCH_DIRECTORIES', [])
+        if not search_directories:
+            assert not hasattr(settings, 'PROJECT_ROOT'), 'Specify WELLBEHAVED_SEARCH_DIRECTORIES or PROJECT_ROOT in settings file!'
+            search_directories = [settings.PROJECT_ROOT]
+
+        for path in search_directories:    
+            for root, dirs, files in os.walk(path):
+                features = [fn for fn in files if fn.endswith('.feature')]                
                 for feature in features:
                     handler_name = 'test_%s_feature' % feature[:-8]
                     attrs[handler_name] = _wrap_run_bdd(handler_name, os.path.join(root, feature))

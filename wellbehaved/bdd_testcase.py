@@ -23,6 +23,7 @@ class FeatureDiscovererMetaclass(type):
             return test_runner
 
         handlers = []
+        
         for root, dirs, files in os.walk('.'):
             if root.endswith('features'):
                 features = [fn for fn in files if fn.endswith('.feature')]
@@ -59,11 +60,11 @@ class DjangoBDDTestCase(TestCase):
         '''
         if not self.use_existing_db:
             super(DjangoBDDTestCase, self)._fixture_setup()
-
-        for db in self.databases:
-            transaction.enter_transaction_management(using=db)
-            transaction.managed(True, using=db)
-        disable_transaction_methods()
+        else:
+            for db in self.databases:
+                transaction.enter_transaction_management(using=db)
+                transaction.managed(True, using=db)
+            disable_transaction_methods()
 
     def _fixture_teardown(self):
         u'''
@@ -73,11 +74,11 @@ class DjangoBDDTestCase(TestCase):
         '''
         if not self.use_existing_db:
             super(DjangoBDDTestCase, self)._fixture_teardown()
-
-        restore_transaction_methods()
-        for db in self.databases:
-            transaction.rollback(using=db)
-            transaction.leave_transaction_management(using=db)             
+        else:
+            restore_transaction_methods()
+            for db in self.databases:
+                transaction.rollback(using=db)
+                transaction.leave_transaction_management(using=db)
 
     def id(self):
         return 'wellbehaved.DjangoBDDTestCase.%s' % self._testMethodName

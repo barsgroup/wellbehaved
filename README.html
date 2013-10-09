@@ -1,154 +1,276 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><style>html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+<h1 class="wmd-title" id="wellbehaved">Wellbehaved</h1>
 
-body{
-  color:#444;
-  font-family:Georgia, Palatino, 'Palatino Linotype', Times, 'Times New Roman',
-              "Hiragino Sans GB", "STXihei", "微软雅黑", serif;
-  font-size:12px;
-  line-height:1.5em;
-  background:#fefefe;
-  width: 45em;
-  margin: 10px auto;
-  padding: 1em;
-  outline: 1300px solid #FAFAFA;
-}
+<p>Обертка вокруг питоновского проекта <code>behave</code> (который, в свою очередь, является портом <code>Cucumber</code> из Ruby), позволяющая автоматически прогонять feature-файлы в качестве Django-тестов.</p><h2 class="wmd-title" id="использование">Использование</h2>
 
-a{ color: #0645ad; text-decoration:none;}
-a:visited{ color: #0b0080; }
-a:hover{ color: #06e; }
-a:active{ color:#faa700; }
-a:focus{ outline: thin dotted; }
-a:hover, a:active{ outline: 0; }
-
-span.backtick {
-  border:1px solid #EAEAEA;
-  border-radius:3px;
-  background:#F8F8F8;
-  padding:0 3px 0 3px;
-}
-
-::-moz-selection{background:rgba(255,255,0,0.3);color:#000}
-::selection{background:rgba(255,255,0,0.3);color:#000}
-
-a::-moz-selection{background:rgba(255,255,0,0.3);color:#0645ad}
-a::selection{background:rgba(255,255,0,0.3);color:#0645ad}
-
-p{
-margin:1em 0;
-}
-
-img{
-max-width:100%;
-}
-
-h1,h2,h3,h4,h5,h6{
-font-weight:normal;
-color:#111;
-line-height:1em;
-}
-h4,h5,h6{ font-weight: bold; }
-h1{ font-size:2.5em; }
-h2{ font-size:2em; border-bottom:1px solid silver; padding-bottom: 5px; }
-h3{ font-size:1.5em; }
-h4{ font-size:1.2em; }
-h5{ font-size:1em; }
-h6{ font-size:0.9em; }
-
-blockquote{
-color:#666666;
-margin:0;
-padding-left: 3em;
-border-left: 0.5em #EEE solid;
-}
-hr { display: block; height: 2px; border: 0; border-top: 1px solid #aaa;border-bottom: 1px solid #eee; margin: 1em 0; padding: 0; }
-
-
-pre , code, kbd, samp { 
-  color: #000; 
-  font-family: monospace; 
-  font-size: 0.88em; 
-  border-radius:3px;
-  background-color: #F8F8F8;
-  border: 1px solid #CCC; 
-}
-pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; padding: 5px 12px;}
-pre code { border: 0px !important; padding: 0;}
-code { padding: 0 3px 0 3px; }
-
-b, strong { font-weight: bold; }
-
-dfn { font-style: italic; }
-
-ins { background: #ff9; color: #000; text-decoration: none; }
-
-mark { background: #ff0; color: #000; font-style: italic; font-weight: bold; }
-
-sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
-sup { top: -0.5em; }
-sub { bottom: -0.25em; }
-
-ul, ol { margin: 1em 0; padding: 0 0 0 2em; }
-li p:last-child { margin:0 }
-dd { margin: 0 0 0 2em; }
-
-img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
-
-table { border-collapse: collapse; border-spacing: 0; }
-td { vertical-align: top; }
-
-@media only screen and (min-width: 480px) {
-body{font-size:14px;}
-}
-
-@media only screen and (min-width: 768px) {
-body{font-size:16px;}
-}
-
-@media print {
-  * { background: transparent !important; color: black !important; filter:none !important; -ms-filter: none !important; }
-  body{font-size:12pt; max-width:100%; outline:none;}
-  a, a:visited { text-decoration: underline; }
-  hr { height: 1px; border:0; border-bottom:1px solid black; }
-  a[href]:after { content: " (" attr(href) ")"; }
-  abbr[title]:after { content: " (" attr(title) ")"; }
-  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
-  pre, blockquote { border: 1px solid #999; padding-right: 1em; page-break-inside: avoid; }
-  tr, img { page-break-inside: avoid; }
-  img { max-width: 100% !important; }
-  @page :left { margin: 15mm 20mm 15mm 10mm; }
-  @page :right { margin: 15mm 10mm 15mm 20mm; }
-  p, h2, h3 { orphans: 3; widows: 3; }
-  h2, h3 { page-break-after: avoid; }
-}
-</style><title>README</title></head><body><h1 id="wellbehaved">Wellbehaved</h1>
-<p>Обертка вокруг питоновского проекта behave, позволяющая автоматически прогонять feature-файлы в качестве тестов.</p>
-<h2 id="_1">Установка и использование</h2>
-<ol>
-<li>Установите пакет <em>wellbehaved</em> со стандартного PyPi-сервера "БАРС Груп":</li>
-</ol>
-<pre><code class="python">pip install wellbehaved -i https://&lt;PyPi_сервер_БАРС_Груп&gt;/simple
-</code></pre>
-
-<ol>
-<li>Добавьте его в INSTALLED_APPS проекта:</li>
-</ol>
-<pre><code class="python">INSTALLED_APPS += ('wellbehaved',)
-</code></pre>
-
-<ol>
-<li>Расположите файлы с описанием поведения (<em>&lt;имя фичи&gt;.feature</em>) в папках, название которых заканчивается на <em>features</em>.</li>
-<li>Запустить тестирование можно с помощью обычной компанды:</li>
-</ol>
-<pre><code>python ./manage.py test wellbehaved
-</code></pre>
-
-<h2 id="gherkin">Gherkin</h2>
-<p><strong>Gherkin</strong> - строчный язык, который использует отступы для задания структуры документа.
-Каждая строчка </p>
-<h2 id="_2">Контакты</h2>
-<p>С вопросами по доработкам, применению и с сообщениями об ошибках пишите на <a href="file:///home/lensvol/projects/wellbehaved/&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#98;&#111;&#114;&#105;&#115;&#111;&#118;&#64;&#98;&#97;&#114;&#115;&#45;&#111;&#112;&#101;&#110;&#46;&#114;&#117;">&#98;&#111;&#114;&#105;&#115;&#111;&#118;&#64;&#98;&#97;&#114;&#115;&#45;&#111;&#112;&#101;&#110;&#46;&#114;&#117;</a></p>
-<h2 id="_3">Благодарности</h2>
 <ul>
-<li>Юле Касимовой (<a href="file:///home/lensvol/projects/wellbehaved/&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#107;&#97;&#115;&#105;&#109;&#111;&#118;&#97;&#64;&#98;&#97;&#114;&#115;&#45;&#111;&#112;&#101;&#110;&#46;&#114;&#117;">&#107;&#97;&#115;&#105;&#109;&#111;&#118;&#97;&#64;&#98;&#97;&#114;&#115;&#45;&#111;&#112;&#101;&#110;&#46;&#114;&#117;</a>) - самоотверженное участие в тестировании продукта;</li>
-<li>Вадиму Малышеву (<a href="file:///home/lensvol/projects/wellbehaved/&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#118;&#118;&#109;&#97;&#108;&#121;&#115;&#104;&#101;&#118;&#64;&#98;&#97;&#114;&#115;&#45;&#111;&#112;&#101;&#110;&#46;&#114;&#117;">&#118;&#118;&#109;&#97;&#108;&#121;&#115;&#104;&#101;&#118;&#64;&#98;&#97;&#114;&#115;&#45;&#111;&#112;&#101;&#110;&#46;&#114;&#117;</a>) - продавливании идеи изучения концепций BDD.</li>
-</ul></body></html>
+<li>Установите пакет <code>wellbehaved</code> со стандартного PyPi-сервера "БАРС Груп":</li>
+</ul>
+
+<pre class="prettyprint prettyprinted" style=""><code><span class="pln">pip install wellbehaved </span><span class="pun">-</span><span class="pln">i https</span><span class="pun">:</span><span class="com">//&lt;PyPi_сервер_БАРС_Груп&gt;/simple</span></code></pre>
+
+<ul>
+<li>Добавьте его в <code>INSTALLED_APPS</code> проекта:</li>
+</ul>
+
+<pre class="prettyprint prettyprinted" style=""><code><span class="pln">INSTALLED_APPS </span><span class="pun">+=</span><span class="pln"> </span><span class="pun">(</span><span class="str">'wellbehaved'</span><span class="pun">,)</span></code></pre>
+
+<ul>
+<li>Расположите файлы с описанием поведения (<em>&lt;имя фичи&gt;.feature</em>) одним из следующих способов:
+<ul><li>одна из списка папок, указанного в настройке <code>WELLBEHAVED_SEARCH_DIRECTORIES</code>;</li>
+<li>в одной из подпапок корня проекта (настройка <code>PROJECT_ROOT</code>)</li></ul></li>
+<li>Запустить тестирование можно с помощью обычной команды:</li>
+</ul>
+
+<pre class="prettyprint prettyprinted" style=""><code><span class="pln">python </span><span class="pun">./</span><span class="pln">manage</span><span class="pun">.</span><span class="pln">py test wellbehaved</span></code></pre><h2 class="wmd-title" id="принцип-работы">Принцип работы</h2>
+
+<p>При запуске тестирования <em>wellbehaved</em> обходит все поддиректории в корне проекта (местоположение <em>manage.py</em>) и ищет в них
+папки <em>features</em>. Каждая найденная папка будет представлена отдельным набором тестов, в котором каждый файл с расширением 
+<em>.feature</em> будет обернут в класс <strong>DjangoBDDTestCase</strong>.</p>
+
+<p>Для каждого модуля с папкой features создается отдельный метод: <code>test_имяфайла_feature</code>. 
+Таким образом, вы можете протестировать единичную функцию системы:</p>
+
+<pre><code>+ core
+    |
+    +- features
+              |
+              + - core_func.feature
+
+python ./manage.py test wellbehaved.DjangoBDDTestCase.test_core_func_feature
+</code></pre><h2 class="wmd-title" id="настройки">Настройки</h2>
+
+<p>Настройки являются необязательными считываются из <code>settings.py</code> проекта:</p>
+
+<ol>
+<li><p><code>WELLBEHAVED_USE_EXISTING_DB</code> - использовать для тестирования существующую базу, используется вместе с 
+<code>TEST_RUNNER = 'wellbehaved.runner.ExistingDBRunner'</code></p></li>
+<li><p><code>WELLBEHAVED_INITIAL_FIXTURES</code> - список фикстур, который будет загружен каждым тестом. Обычно ииспользуется для занесения общих значений в справочники и по формату аналогичен аттрибуту <em>fixtures</em> в <em>TestCase</em>.</p></li>
+<li><p><code>WELLBEHAVED_FORMATTER</code> - модуль форматирования, используемый <em>behave</em> для вывода результатов. Возможные варианты описаны в <a href="http://pythonhosted.org/behave/formatters.html">списке модулей форматирования behave</a>, по умолчанию стоит <code>[pretty]</code>.</p></li>
+<li><p><code>WELLBEHAVED_LANG</code> - код языка, на котором написано описание функционала. По умолчанию стоит <code>'ru'</code>.</p></li>
+</ol><h2 class="wmd-title" id="gherkin">Gherkin</h2>
+
+<p>(здесь и далее - перевод и легкая адаптация статьи <a href="http://docs.behat.org/guides/1.gherkin.html">"Writing Features - Gherkin Language"</a>)</p>
+
+<p><strong>Gherkin</strong> - человеко-читаемый язык для описания поведения системы, который использует отступы для задания структуры документа,
+(пробелы или символы табуляции). Каждая строчка начинается с одного из ключевых слов и описывает один из шагов.</p>
+
+<p>Пример:</p>
+
+<pre><code>Функция: Короткое, но исчерпывающее описание требуемого функционала
+    Для того, чтобы достичь определенных целей
+    В качестве определенного участника взаимодействия с системой
+    Я хочу получить определенную пользу
+
+    Сценарий: Какая-то определенная бизнес-ситуация
+        Дано какое-то условие
+        И ещё одно условие
+        Когда предпринимается какое-то действие участником
+        И им делается ещё что-то
+        И вдобавок он совершил что-то ещё
+        То получается какой-то проверяемый результат
+        И что-то ещё случается, что мы можем проверить
+</code></pre>
+
+<p>Обработчик разбивает файл с тестами на функции, сценарии и входящие в них шаги. Давайте разберем 
+этот пример:</p>
+
+<ol>
+<li><p>Строка <strong>Функция: Короткое, но исчерпывающее описание требуемого функционала</strong> начинает собой
+описание функционала и дает ему название.</p></li>
+<li><p>Следующие три строчки не обрабатываются и не несут никакой смысловой нагрузке для обработчика тестов,
+но они задают контекст тестирования и одновременно описывают, какую пользу мы получим от этого функционала.</p></li>
+<li><p>Строка <strong>Сценарий: Какая-то определенная бизнес-ситуация</strong> начинает сценарий и содержит его описание.</p></li>
+<li><p>Следующие 7 строчек описывают шаги теста, каждому из которых впоследствии
+будет сопоставлен определенный программный код, выполняющий описанное действие.
+Сопоставлению подлежат части строк лежащие после ключевых слов "Дано", "И", "Когда" и т.д.</p></li>
+</ol>
+
+<h3 class="wmd-title" id="функции-(feature)">Функции (Feature)</h3>
+
+<p>Каждая функция описывается в отдельном файле с расширением <em>.feature</em>. Первая строчка
+должна начинаться с ключевого слова "Функция:", за которой могут идти три строчки с описанием,
+размеченные отступами. Каждая функция обычно состоит из списка сценариев. </p>
+
+<p>Каждый сценарий состоит из списка <em>шагов</em>, каждый из которых должен начинаться с одного из ключевых слов:</p>
+
+<ul>
+<li>Дано</li>
+<li>Когда</li>
+<li>То</li>
+<li>Но</li>
+<li>И</li>
+</ul>
+
+<p>Шаги <em>"Но"</em> и <em>"И"</em> существуют исключительно для удобства чтения и по своим функциям повторяют ключевое слово,
+с которого начиналась предыдущая строчка.</p>
+
+<p>Вдобавок к сценариям, описание функционала может также содержать <em>структуры сценариев</em> и <em>предыстории</em>.</p>
+
+<h3 class="wmd-title" id="сценарий-(scenario)">Сценарий (Scenario)</h3>
+
+<p>Сценарий представляет собой одну из ключевых структур в языке <em>Gherkin</em>. Каждый сценарий начинается
+с ключевого слова <strong>"Сценарий:"</strong>, и может содержать в себе название сценария. Описание функционала
+может содержать в себе один или больше сценариев, и каждый сценарий состоит из одного или более шага.</p>
+
+<p>Каждый из следующих сценариев содержит три шага:</p>
+
+<pre><code>Сценарий: Вася создает новую запись
+    Дано я вошел в систему как Вася
+    Когда я пытаюсь добавить запись в справочник "Лекарства"
+    То мне должен быть ответ "Ваша запись успешно добавлена."
+
+Сценарий: Вася не может добавлять запись в справочник лечений
+    Дано я вошел в систему как Вася
+    Когда я пытаюсь добавить запись в справочник "Виды лечений"
+    То мне должен быть ответ "У вас нет прав доступа!"
+</code></pre>
+
+<h3 class="wmd-title" id="структура-сценария-(scenario-outline)">Структура сценария (Scenario Outline)</h3>
+
+<p>Достаточно часто приходится писать множество мелких сценариев, которые различаются буквально парой
+переменных. Эти повторения могут быстро надоесть:</p>
+
+<pre><code>Сценарий: удалить 5 записей из 12
+    Дано есть 12 записей
+    Когда я удаляю 5 записей
+    То у меня должно остаться 7 записей
+
+Сценарий: удалить 5 записей из 20
+    Дано есть 20 записей
+    Когда я удаляю 5 записей
+    То у меня должно остаться 15 записей
+</code></pre>
+
+<p>Структуры сценариев позволяют нам более кратко описывать подобные наборы сценариев
+с помощью шаблонов:</p>
+
+<pre><code>Структура сценария: удаление записей
+    Дано есть &lt;было&gt; записей
+    Когда я удаляю &lt;удалено&gt; записей
+    То у меня должно остаться &lt;остаток&gt; записей
+
+    Примеры:
+        | было  | удалено | остаток |
+        | 12    |    5    |   7     |
+        | 20    |    5    |   15    |
+</code></pre>
+
+<p>Шаги указанные в структуре сценария не выполняются напрямую, но используются 
+для подстановки в них значений из таблицы примеров. Каждая строчка таблицы
+будет обрабатываться как отдельный сценарий с указанными значениями вместо
+заглушек "было", "удалено" и "стало".</p>
+
+<h3 class="wmd-title" id="предыстории-(background)">Предыстории (Background)</h3>
+
+<p>Предыстории позволяют вам добавить определенный контекст ко всем сценариям в 
+пределах функции. По сути, предыстория - сценарий без имени, состоящий из
+шагов. Основное отличие в запуске: предыстория запускается перед каждым
+сценарием:</p>
+
+<pre><code>Функция: поддержка многих справочников
+
+    Предыстория:
+        Дано есть пользователь с именем "Вася"
+        И есть справочник "Лекарства"
+        И у пользователя "Вася" есть право на запись в  "Лекарство"
+        И есть справочник "Виды лечений"
+
+    Сценарий: Вася создает новую запись
+        Дано я вошел в систему как Вася
+        Когда я пытаюсь добавить запись в справочник "Лекарства"
+        То мне должен быть ответ "Ваша запись успешно добавлена."
+
+    Сценарий: Вася не может добавлять запись в справочник лечений
+        Дано я вошел в систему как Вася
+        Когда я пытаюсь добавить запись в справочник "Виды лечений"
+        То мне должен быть ответ "У вас нет прав доступа!"
+</code></pre>
+
+<h3 class="wmd-title" id="шаги">Шаги</h3>
+
+<p>Функции состоят из шагов, также известных как <em>Данные</em>, <em>Действия</em> и <em>Результаты</em>.</p>
+
+<h4 class="wmd-title" id="данные-(givens)">Данные (Givens)</h4>
+
+<p>Назначение шагов <em>Дано</em> состоит в <strong>приведение системы в известное состояние</strong>
+перед тем как пользователь (или внешняя система) начнет взаимодействие с системой
+(в шагах <em>Когда</em>). Также можно рассматривать их как предусловия.</p>
+
+<p>Пример: создавать объекты сущностей или настраивать БД</p>
+
+<pre><code>Дано нет пользователей в базе
+Дано база данных пустая
+</code></pre>
+
+<p>Пример: вход пользователя в систему (исключение к правилу "никаких взаимодействий в шаге Дано")</p>
+
+<pre><code>Дано я вошел в систему как "Вася"
+</code></pre>
+
+<h4 class="wmd-title" id="действия-(whens)">Действия (Whens)</h4>
+
+<p>Назначение шагов <em>Когда</em> состоит в <strong>описании ключевого действия, совершаемого пользователем</strong>.</p>
+
+<p>Пример: взаимодействие со страницей</p>
+
+<pre><code>Когда я открыл форму добавления учреждения
+Когда я ввел "Институт радости" в поле "Наименование"
+Когда я выбрал в поле "Тип" значение "Институт"
+Когда я нажал на кнопку "Сохранить"
+</code></pre>
+
+<h4 class="wmd-title" id="результаты-(thens)">Результаты (Thens)</h4>
+
+<p>Назначение шагов <em>То</em> состоит в <strong>наблюдении результатов выполнения действий</strong>. Наблюдения должны быть связаны с явной пользой, которая указаны в описании функции. Также необходимо помнить, что должен проверяться <em>вывод системы</em> (отчеты, интерфейс, сообщения), а не что-то глубоко закопанное в систему.</p><h4 class="wmd-title" id="предлоги-(and,-but)">Предлоги (And, But)</h4>
+
+<p>Если у вас есть несколько шагов <em>Дано</em>, <em>Когда</em>, или <em>То</em>
+то вы можете писать так:</p>
+
+<pre><code>Сценарий: множественные данные
+    Дано что-то первое
+    Дано что-то второе
+    Дано и что-то ещё
+    Когда я открою свои глаза
+    То я увижу что-то
+    То чего-то я не увижу
+</code></pre>
+
+<p>...или можете использовать шаги <em>И</em> и <em>Но</em>, превращая свой сценарий в нечто более читаемое:</p>
+
+<pre><code>Сценарий: множественные данные
+    Дано что-то первое
+    И что-то второе
+    И и что-то ещё
+    Когда я открою свои глаза
+    То я увижу что-то
+    Но чего-то я не увижу
+</code></pre>
+
+<h4 class="wmd-title" id="таблицы">Таблицы</h4>
+
+<p>Регулярные выражения, с помощью которых программисты получают
+данные из текстового описания шагов позволяют получать небольшие куски данных из самой строчки. Но бывает и такое, что необходимо передать больший объем данных в один шаг. И здесь нам на помощь придут таблицы:</p>
+
+<pre><code>Сценарий:
+    Дано существуют следующие пользователи:
+        | Логин | E-mail        | Пароль |
+        | user1 | user1@mail.ru | pass1  |
+        | joe   | joe@gmail.com | hey    |
+        | heyho | hey@hoe.com   | joe    |
+</code></pre><h2 class="wmd-title" id="контакты">Контакты</h2>
+
+<p>С вопросами по доработкам, применению и с сообщениями об ошибках пишите на <a href="mailto:borisov@bars-open.ru">borisov@bars-open.ru</a></p>
+
+<h2 class="wmd-title" id="благодарности">Благодарности</h2>
+
+<ul>
+<li>Юле Касимовой (<a href="mailto:kasimova@bars-open.ru">kasimova@bars-open.ru</a>) - самоотверженное участие в тестировании продукта;</li>
+<li>Сергею Чипиге (<a href="mailto:svchipiga@bars-open.ru">svchipiga@bars-open.ru</a>) - нахождение багов;</li>
+<li>Вадиму Малышеву (<a href="mailto:vvmalyshev@bars-open.ru">vvmalyshev@bars-open.ru</a>) - продавливании идеи изучения концепций BDD.</li>
+</ul><h2 class="wmd-title" id="ссылки">Ссылки</h2>
+
+<ul>
+<li><a href="http://docs.behat.org/guides/1.gherkin.html">Writing Features - Gherkin Language</a></li>
+<li><a href="http://pythonhosted.org/behave/philosophy.html">Behavior Driven Development (from behave documentation)</a></li>
+<li><a href="http://pythonhosted.org/behave/formatters.html">List of behave formatters</a></li>
+</ul>

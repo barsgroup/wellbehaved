@@ -5,7 +5,7 @@ from setuptools import setup
 setup(
     name='wellbehaved',
     packages=['wellbehaved'],
-    version='0.1.0',
+    version='0.1.0.0',
     description='Simple Django Test Runner for the behave BDD module '
                 'with i18n support',
     author='Kirill Borisov',
@@ -25,6 +25,7 @@ setup(
         ]
     },
     install_requires=[
+        'jinja==2.7.1',
         'behave==1.2.3'
     ]
 )

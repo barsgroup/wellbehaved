@@ -1,6 +1,8 @@
 #coding: utf-8
 
 import codecs
+import importlib
+import os
 import sys
 import yaml
 from optparse import OptionParser
@@ -10,7 +12,29 @@ from behave.configuration import Configuration
 from import_hooks import TemplateImportHooker
 from log import logger, setup_logging
 
-from plugin_redmine import prepare_environment as prepare_redmine_env
+from utils import HookDictWrapper
+
+
+def find_plugins():
+    '''
+    Находим все плагины.
+
+    @return Список модулей найденных плагинов
+    '''
+    plugins = {}
+    modules_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plugins')
+
+    modules = [fn for fn in os.listdir(modules_path) if fn.endswith('.py')]
+
+    for fn in modules:
+        if fn == '__init__.py' or not fn.startswith('plugin_'):
+            continue
+
+        name, ext = os.path.splitext(fn)
+        plugins[name[7:]] = importlib.import_module('.plugins.{0}'.format(name),
+                                                      package=__package__)
+    return plugins
+
 
 def load_vars_from_pyfile(fn):
     '''
@@ -47,7 +71,7 @@ def start():
     if options.cfg_file:
         try:
             with open(options.cfg_file, 'r') as fp:
-                config = yaml.load(fp.read())
+                config = yaml.load(fp.read()) or {}
         except Exception as ex:
             logger.error('Can\'t load {0}: {1}'.format(options.cfg_file, unicode(ex)))
         else:
@@ -72,10 +96,16 @@ def start():
 
     from behave_runner import CustomBehaveRunner
     runner = CustomBehaveRunner(behave_cfg)
+    runner.hooks = HookDictWrapper()
 
-    if 'redmine' in config:
-        redmine_hooks = prepare_redmine_env(config['redmine'])
-        runner.hooks.update(redmine_hooks)
+    if 'plugins' in config:
+        plugins = find_plugins()
+        plugin_configs = config['plugins']
+        for p_id, plugin in plugins.items():
+            assert p_id in plugins, 'Unknown plugin: {}!'.format(p_id)
+            custom_hooks = plugin.prepare_environment(plugin_configs[p_id])
+            for hook, handler in custom_hooks.items():
+                runner.hooks[hook] = handler
 
     runner.run()
 

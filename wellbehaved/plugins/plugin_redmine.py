@@ -1,7 +1,7 @@
 #coding: utf-8
 
 from redmine import Redmine
-from log import logger
+from ..log import logger
 
 
 def prepare_environment(config):

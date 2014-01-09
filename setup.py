@@ -4,12 +4,15 @@ from setuptools import setup
 
 setup(
     name='wellbehaved',
-    packages=['wellbehaved'],
-    version='0.1.1.0',
+    version='0.1.2.0',
     description='Simple wrapper for behave with added templating support.',
     author='Kirill Borisov',
     author_email='borisov@bars-open.ru',
     url='http://src.bars-open.ru/py/m3/m3_contrib/wellbehaved',
+    packages=[
+        'wellbehaved',
+        'wellbehaved.plugins'
+    ],
     classifiers=[
         'Programming Language :: Python :: 2.6',
         'Framework :: Django',
@@ -27,5 +30,6 @@ setup(
         'jinja==2.7.1',
         'behave==1.2.3'
         'pyyaml',
+	'pyredmine'
     ]
 )

@@ -98,12 +98,15 @@ def start():
     runner = CustomBehaveRunner(behave_cfg)
     runner.hooks = HookDictWrapper()
 
-    if 'plugins' in config:
+    if 'enabled_plugins' in config:
         plugins = find_plugins()
-        plugin_configs = config['plugins']
-        for p_id, plugin in plugins.items():
+        plugin_configs = config.get('plugins', {})
+        for p_id in config['enabled_plugins'] :
             assert p_id in plugins, 'Unknown plugin: {}!'.format(p_id)
-            custom_hooks = plugin.prepare_environment(plugin_configs[p_id])
+            plugin = plugins[p_id]
+            logger.debug('Loading plugin "{}"...'.format(p_id))
+            custom_hooks = plugin.prepare_environment(plugin_configs.get(p_id, {}))
+            logger.debug('Plugin "{}" sets hooks: {}'.format(p_id, ', '.join(custom_hooks.keys())))
             for hook, handler in custom_hooks.items():
                 runner.hooks[hook] = handler
 

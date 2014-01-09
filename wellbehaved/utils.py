@@ -26,8 +26,8 @@ class HookDictWrapper(dict):
         Перехватчик установки обработчика очередного шага пользовательским
         кодом. Устанавливаемый обработчик будет всегда выполнятся после нашего.
 
-        :param hook: Код события ([after|before]_[feature|step|...])
-        :param handler: Обработчик события из environment.py
+        @param hook    Код события ([after|before]_[feature|step|...])
+        @param handler Обработчик события из environment.py
         '''
 
         def wrap_hook(name, original_hook):

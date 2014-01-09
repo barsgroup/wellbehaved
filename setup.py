@@ -6,11 +6,10 @@ setup(
     name='wellbehaved',
     packages=['wellbehaved'],
     version='0.1.0.0',
-    description='Simple Django Test Runner for the behave BDD module '
-                'with i18n support',
+    description='Simple wrapper for behave with added templating support.',
     author='Kirill Borisov',
     author_email='borisov@bars-open.ru',
-    url='http://src.bars-open.ru/py/WebEdu/tools/wellbehaved',
+    url='http://src.bars-open.ru/py/m3/m3_contrib/wellbehaved',
     classifiers=[
         'Programming Language :: Python :: 2.6',
         'Framework :: Django',
@@ -27,5 +26,6 @@ setup(
     install_requires=[
         'jinja==2.7.1',
         'behave==1.2.3'
+        'pyyaml',
     ]
 )

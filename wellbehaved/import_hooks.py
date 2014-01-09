@@ -5,10 +5,18 @@ from jinja2 import Environment
 import imp
 import sys
 
+from log import logger
+
 
 class TemplateImportHooker(object):
+    '''
+    Импорт-хук, который оборачивает стандартную функцию разбора фиич
+    и трактует каждую из них как шаблон для Jinja2.
+    '''
+
     def __init__(self, vars=None):
         self.vars = vars or {}
+        logger.debug("Template variables: {0}".format(vars))
 
     def find_module(self, name, path=None):
         if name == 'behave.parser':
@@ -27,6 +35,9 @@ class TemplateImportHooker(object):
         old_fn = getattr(module, 'parse_feature')
 
         def new_parse(data, language=None, filename=None):
+            if filename:
+                logger.debug('Processing template: {0}'.format(filename))
+
             data = Environment().from_string(data).render(self.vars)
             return old_fn(data, language=language, filename=filename)
 

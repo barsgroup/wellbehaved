@@ -10,6 +10,7 @@ from behave.configuration import Configuration
 from import_hooks import TemplateImportHooker
 from log import logger, setup_logging
 
+from plugin_redmine import prepare_environment as prepare_redmine_env
 
 def load_vars_from_pyfile(fn):
     '''
@@ -65,12 +66,17 @@ def start():
     # применять жуткий хак с подменой командной строки
     old_argv = sys.argv
     sys.argv = sys.argv[:1]
-    config = Configuration()
-    config.format = ['pretty', ]
+    behave_cfg = Configuration()
+    behave_cfg.format = ['pretty', ]
     sys.argv = old_argv
 
     from behave_runner import CustomBehaveRunner
-    runner = CustomBehaveRunner(config)
+    runner = CustomBehaveRunner(behave_cfg)
+
+    if 'redmine' in config:
+        redmine_hooks = prepare_redmine_env(config['redmine'])
+        runner.hooks.update(redmine_hooks)
+
     runner.run()
 
 

@@ -99,12 +99,19 @@ def start():
     runner.hooks = StackedHookDictWrapper()
 
     if 'enabled_plugins' in config:
+        # Ищем все доступные плагины...
         plugins = find_plugins()
         plugin_configs = config.get('plugins', {})
+
         for p_id in config['enabled_plugins'] :
+            # TODO: убрать, если будет возможность подключать свои плагины
             assert p_id in plugins, 'Unknown plugin: {}!'.format(p_id)
             plugin = plugins[p_id]
-            logger.debug('Loading plugin "{}"...'.format(p_id))
+
+            # Подключаем ещё один набор функций окружения. С точки зрения behave'а,
+            # это будет одна функция, которая в свою очередь по порядку будет вызывать
+            # обработчики _каждого_ плагина.
+            logger.info('Loading plugin "{}"...'.format(p_id))
             custom_hooks = plugin.prepare_environment(plugin_configs.get(p_id, {}))
             logger.debug('Plugin "{}" sets hooks: {}'.format(p_id, ', '.join(custom_hooks.keys())))
             for hook, handler in custom_hooks.items():

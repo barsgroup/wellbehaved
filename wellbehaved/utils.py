@@ -53,7 +53,13 @@ class StackedHookDictWrapper(dict):
             for fn in fnlist:
                 fn(*args, **kwargs)
 
-        if not hook in self.hook_registry:
-            super(StackedHookDictWrapper, self).__setitem__(hook, wrapper)
-
-        self.hook_registry.setdefault(hook, []).append(handler)
+        # Беспорядочный метод заполнения окружения behave'ом заставляет
+        # нас явно фильтровать список устанавливаемых значений.
+        if hook in ['before_all', 'after_all', 'before_step', 'after_step',
+                    'before_feature', 'after_feature', 'before_tag', 'after_tag',
+                    'before_scenario', 'after_scenario']:
+            if not hook in self.hook_registry:
+                super(StackedHookDictWrapper, self).__setitem__(hook, wrapper)
+            self.hook_registry.setdefault(hook, []).append(handler)
+        else:
+            super(StackedHookDictWrapper, self).__setitem__(hook, handler)

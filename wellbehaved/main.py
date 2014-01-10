@@ -59,6 +59,10 @@ def start():
     setup_logging()
     config = {}
 
+    arg_delim_index = sys.argv.index('--')
+    behave_args = sys.argv[arg_delim_index+1:]
+    sys.argv = sys.argv[:arg_delim_index]
+
     opt_parser = OptionParser()
     opt_parser.add_option('', '--var-file', dest='var_file',
                           help='Load template variables from .py file.',
@@ -85,14 +89,9 @@ def start():
             template_vars.pop('__builtins__', {})
             sys.meta_path = [TemplateImportHooker(template_vars)]
 
-    # Так как behave пытается обрабатывать аргументы командной строки
-    # и это пока что (<=1.2.3) не получается отключить, то приходится
-    # применять жуткий хак с подменой командной строки
-    old_argv = sys.argv
-    sys.argv = sys.argv[:1]
+    sys.argv = [sys.argv[0]] + behave_args
     behave_cfg = Configuration()
     behave_cfg.format = ['pretty', ]
-    sys.argv = old_argv
 
     from behave_runner import CustomBehaveRunner
     runner = CustomBehaveRunner(behave_cfg)

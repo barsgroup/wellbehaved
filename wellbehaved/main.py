@@ -95,9 +95,9 @@ def start():
 
     from behave_runner import CustomBehaveRunner
     runner = CustomBehaveRunner(behave_cfg)
-    runner.hooks = StackedHookDictWrapper()
 
     if 'enabled_plugins' in config:
+        runner.hooks = StackedHookDictWrapper()
         # Ищем все доступные плагины...
         plugins = find_plugins()
         plugin_configs = config.get('plugins', {})

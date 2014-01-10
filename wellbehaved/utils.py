@@ -41,3 +41,19 @@ class HookDictWrapper(dict):
                                                      wrap_hook(hook, handler))
         else:
             super(HookDictWrapper, self).__setitem__(hook, handler)
+
+
+class StackedHookDictWrapper(dict):
+    def __init__(self):
+        self.hook_registry = {}
+
+    def __setitem__(self, hook, handler):
+        def wrapper(*args, **kwargs):
+            fnlist = self.hook_registry[hook]
+            for fn in fnlist:
+                fn(*args, **kwargs)
+
+        if not hook in self.hook_registry:
+            super(StackedHookDictWrapper, self).__setitem__(hook, wrapper)
+
+        self.hook_registry.setdefault(hook, []).append(handler)

@@ -12,7 +12,7 @@ from behave.configuration import Configuration
 from import_hooks import TemplateImportHooker
 from log import logger, setup_logging
 
-from utils import HookDictWrapper
+from utils import StackedHookDictWrapper
 
 
 def find_plugins():
@@ -96,7 +96,7 @@ def start():
 
     from behave_runner import CustomBehaveRunner
     runner = CustomBehaveRunner(behave_cfg)
-    runner.hooks = HookDictWrapper()
+    runner.hooks = StackedHookDictWrapper()
 
     if 'enabled_plugins' in config:
         plugins = find_plugins()

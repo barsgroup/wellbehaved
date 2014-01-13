@@ -89,9 +89,7 @@ def start():
             template_vars.pop('__builtins__', {})
             sys.meta_path = [TemplateImportHooker(template_vars)]
 
-    sys.argv = [sys.argv[0]] + behave_args
-    behave_cfg = Configuration()
-    behave_cfg.format = ['pretty', ]
+    behave_cfg = Configuration(command_args=behave_args)
 
     from behave_runner import CustomBehaveRunner
     runner = CustomBehaveRunner(behave_cfg)
@@ -102,7 +100,7 @@ def start():
         plugins = find_plugins()
         plugin_configs = config.get('plugins', {})
 
-        for p_id in config['enabled_plugins'] :
+        for p_id in config['enabled_plugins']:
             # TODO: убрать, если будет возможность подключать свои плагины
             assert p_id in plugins, 'Unknown plugin: {}!'.format(p_id)
             plugin = plugins[p_id]

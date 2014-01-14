@@ -2,7 +2,7 @@ syntax: glob
 build/
 *.egg-info/
 dist/
-
+docs/_build/
 syntax: glob
 *.pyc
 *.rdb

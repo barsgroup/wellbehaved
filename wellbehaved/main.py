@@ -59,9 +59,12 @@ def start():
     setup_logging()
     config = {}
 
-    arg_delim_index = sys.argv.index('--')
-    behave_args = sys.argv[arg_delim_index+1:]
-    sys.argv = sys.argv[:arg_delim_index]
+    try:
+        arg_delim_index = sys.argv.index('--')
+        behave_args = sys.argv[arg_delim_index+1:]
+        sys.argv = sys.argv[:arg_delim_index]
+    except ValueError:
+        behave_args = []
 
     opt_parser = OptionParser()
     opt_parser.add_option('', '--var-file', dest='var_file',
@@ -89,10 +92,13 @@ def start():
             template_vars.pop('__builtins__', {})
             sys.meta_path = [TemplateImportHooker(template_vars)]
 
-    behave_cfg = Configuration(command_args=behave_args)
+    sys.argv = [sys.argv[0],] + behave_args
+    behave_cfg = Configuration()
+    if not behave_cfg.format:
+        behave_cfg.format = ['pretty',]
 
-    from behave_runner import CustomBehaveRunner
-    runner = CustomBehaveRunner(behave_cfg)
+    from behave.runner import Runner
+    runner = Runner(behave_cfg)
 
     if 'enabled_plugins' in config:
         runner.hooks = StackedHookDictWrapper()

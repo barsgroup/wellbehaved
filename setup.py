@@ -30,6 +30,7 @@ setup(
         'jinja==2.7.1',
         'behave==1.2.3',
         'pyyaml',
-        'pyredmine'
+        'pyredmine',
+        'coverage'
     ]
 )

@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to wellbehaved's documentation!
+wellbehaved
 =======================================
 
-Contents:
+Содержание:
 
 .. toctree::
    :maxdepth: 2
@@ -15,7 +15,7 @@ Contents:
    Gherkin
    README
 
-Indices and tables
+Индекс
 ==================
 
 * :ref:`genindex`

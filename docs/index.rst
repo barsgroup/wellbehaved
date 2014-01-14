@@ -11,8 +11,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   BDD.rst
-   README.rst
+   BDD
+   Gherkin
+   README
 
 Indices and tables
 ==================

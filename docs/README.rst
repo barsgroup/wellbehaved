@@ -49,23 +49,24 @@ Wellbehaved
 
 Плагины
 -------
--  **redmine** - пропуск выполнения сценариев согласно информации из Redmine.
 
-   Этот плагин позволяет пропускать выполнения сценария (в результатах он будет отображаться
-   как *skipped), если статус связанной со сценарием задачи соответствует одному из заданных.
+**redmine**
++++++++++++
+Пропуск выполнения сценариев согласно информации из Redmine.
 
-   Настройки:
+Этот плагин позволяет пропускать выполнения сценария (в результатах он будет отображаться
+как *skipped), если статус связанной со сценарием задачи соответствует одному из заданных.
 
-   -  *host* - адрес сервера Redmine;
-   -  *user* - имя пользователя;
-   -  *pass* - пароль;
-   -  *statuses* - разделенный запятыми список наименований статусов
-      задач.
+Настройки:
 
-   Сценарий связывается с задачей через тэг формы
-   **@redmine{{taskID}}**:
+-  *host* - адрес сервера Redmine;
+-  *user* - имя пользователя;
+-  *pass* - пароль;
+-  *statuses* - разделенный запятыми список наименований статусов задач.
 
-  ::
+Сценарий связывается с задачей через тэг формы **@redmine{{taskID}}**:
+
+::
 
    @redmine12345
    Scenario: hello, world!
@@ -83,19 +84,20 @@ Wellbehaved
 
 ::
 
-   #coding: utf-8
+  #coding: utf-8
 
-   username = u'Тестовый Пользователь'
+  username = u'Тестовый Пользователь'
 
 Файл конфигурации:
 ::
-   plugins:
-       redmine:
-           host: http://task.bars-open.ru
-           user: user1
-           pass: pass1
-           statuses: ['Разработка', 'Анализ']
-   enabled_plugins: ['redmine']
+
+  plugins:
+    redmine:
+      host: http://task.bars-open.ru
+      user: user1
+      pass: pass1
+      statuses: ['Разработка', 'Анализ']
+    enabled_plugins: ['redmine']
 
 Feature-файл:
 
@@ -113,7 +115,8 @@ Feature-файл:
 
 Запуск:
 ::
-   ./wellbehaved --cfg-file cfg.yaml --var-file vars.py -- --lang py
+
+  ./wellbehaved --cfg-file cfg.yaml --var-file vars.py -- --lang py
 
 Контакты
 --------

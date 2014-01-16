@@ -18,16 +18,33 @@ class TemplateImportHooker(object):
     '''
 
     def __init__(self, vars=None):
+        u'''
+        Конструктор, сохраняющий переменные в классе.
+
+        :params vars: Переменные контекста для шаблонизатора.
+        '''
         self.vars = vars or {}
         logger.debug("Template variables: {0}".format(vars))
 
     def find_module(self, name, path=None):
+        u'''
+        Фильтр модулей, которые обрабатываются этим хуком.
+
+        :param name: Имя импортируемого модуля.
+        :param path: Путь к импортируемому модулю.
+        '''
         if name == 'behave.parser':
             self.path = path
             return self
         return None
 
     def load_module(self, name):
+        u'''
+        Загрузчик модуля, который подменяет функцию разбора feature-файла
+        нашей, которая предварительно преобразует её через шаблонизатор.
+
+        :param name: Имя модуля, во избежание повторной обработки.
+        '''
         if name in sys.modules:
             return sys.modules[name]
 

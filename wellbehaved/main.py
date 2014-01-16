@@ -19,7 +19,7 @@ def find_plugins():
     '''
     Находим все плагины.
 
-    @return Список модулей найденных плагинов
+    :returns: Список модулей, принадлежащих найденным плагинам.
     '''
     plugins = {}
     modules_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plugins')
@@ -41,11 +41,8 @@ def load_vars_from_pyfile(fn):
     Загрузка переменных из контекста Python-кода, хранящегося в
     указанном файле.
 
-    @param: fn  .py файл
-    @type:  fn  unicode
-
-    @return переменные верхнего уровня из .py-файла
-    @rtype  dict
+    :param fn: .py файл с переменными для передачи шаблонизатору.
+    :returns: словарь с переменными верхнего уровня из .py-файла
     '''
     local_vars = {}
 
@@ -56,6 +53,10 @@ def load_vars_from_pyfile(fn):
 
 
 def start():
+    u'''
+    Точка входа в приложение, которая активируется при запуске его
+    из командной строки.
+    '''
     setup_logging()
     config = {}
 
@@ -92,6 +93,9 @@ def start():
             template_vars.pop('__builtins__', {})
             sys.meta_path = [TemplateImportHooker(template_vars)]
 
+    # Изменяем sys.argv для обхода поведения behave<=1.2.3, который
+    # всегда пытается получить опции из командной строки.
+    # TODO: с выходом стабильной 1.2.4 поменять на передачу command_args
     sys.argv = [sys.argv[0],] + behave_args
     behave_cfg = Configuration()
     if not behave_cfg.format:

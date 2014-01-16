@@ -25,8 +25,8 @@ project_id = u'wellbehaved'
 company = 'BARS Group'
 copyright = u'2013-%s, %s' % (datetime.now().year, company)
 
-version = '1.2.0'
-release = '1.2.0'
+version = '0.1.2.0'
+release = '0.1.2.0'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

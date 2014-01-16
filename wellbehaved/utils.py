@@ -22,6 +22,13 @@ class StackedHookDictWrapper(dict):
         :param handler: Функция, обрабатывающая определенный шаг тестирования.
         '''
         def wrapper(*args, **kwargs):
+            u'''
+            Оберточная функция, которая вызывает по очереди каждый из установленных
+            извне обработчиков того или иного шага тестирования.
+
+            :param args: Позиционные аргументы обработчика.
+            :param kwargs: Словарь с ключами-значениями непозиционных аргументов.
+            '''
             fnlist = self.hook_registry[hook]
             for fn in fnlist:
                 fn(*args, **kwargs)

@@ -9,9 +9,12 @@ from log import logger
 
 
 class TemplateImportHooker(object):
-    '''
+    u'''
     Импорт-хук, который оборачивает стандартную функцию разбора фиич
     и трактует каждую из них как шаблон для Jinja2.
+
+    Выполнено это через подмену функции *parse_feature* модуля
+    **behave.parser**.
     '''
 
     def __init__(self, vars=None):
@@ -35,6 +38,10 @@ class TemplateImportHooker(object):
         old_fn = getattr(module, 'parse_feature')
 
         def new_parse(data, language=None, filename=None):
+            u'''
+            Заменяющая стандартный парсер функция, которая предварительно
+            прогоняет считанное содержимое файла через шаблонизатор.
+            '''
             if filename:
                 logger.debug('Processing template: {0}'.format(filename))
 

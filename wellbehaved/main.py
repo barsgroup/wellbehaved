@@ -1,18 +1,22 @@
 #coding: utf-8
+'''
+Основной модуль.
+'''
 
 import codecs
 import importlib
 import os
+from os import path
 import sys
 import yaml
 from optparse import OptionParser
 
 from behave.configuration import Configuration
 
-from import_hooks import TemplateImportHooker
-from log import logger, setup_logging
+from wellbehaved.import_hooks import TemplateImportHooker
+from wellbehaved.log import logger, setup_logging
 
-from utils import StackedHookDictWrapper
+from wellbehaved.utils import StackedHookDictWrapper
 
 
 def find_plugins():
@@ -22,7 +26,7 @@ def find_plugins():
     :returns: Список модулей, принадлежащих найденным плагинам.
     '''
     plugins = {}
-    modules_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plugins')
+    modules_path = path.join(path.dirname(path.abspath(__file__)), 'plugins')
 
     modules = [fn for fn in os.listdir(modules_path) if fn.endswith('.py')]
 
@@ -30,13 +34,13 @@ def find_plugins():
         if fn == '__init__.py' or not fn.startswith('plugin_'):
             continue
 
-        name, ext = os.path.splitext(fn)
-        plugins[name[7:]] = importlib.import_module('.plugins.{0}'.format(name),
-                                                      package=__package__)
+        name, _ = path.splitext(fn)
+        plugins[name[7:]] = importlib.import_module('.plugins.%s' % name,
+                                                    package=__package__)
     return plugins
 
 
-def load_vars_from_pyfile(fn):
+def load_vars_from_pyfile(filename):
     '''
     Загрузка переменных из контекста Python-кода, хранящегося в
     указанном файле.
@@ -46,8 +50,8 @@ def load_vars_from_pyfile(fn):
     '''
     local_vars = {}
 
-    with codecs.open(fn, 'r', 'utf-8') as fp:
-        code = fp.read()
+    with codecs.open(filename, 'r', 'utf-8') as var_fp:
+        code = var_fp.read()
         exec code in local_vars
     return local_vars
 
@@ -74,16 +78,17 @@ def start():
     opt_parser.add_option('', '--cfg-file', dest='cfg_file',
                           help='Load configuration from YAML file.',
                           metavar='<FILE>')
-    (options, args) = opt_parser.parse_args()
+    (options, _) = opt_parser.parse_args()
 
     if options.cfg_file:
+        cfg_fn = options.cfg_file
         try:
-            with open(options.cfg_file, 'r') as fp:
+            with open(cfg_fn, 'r') as fp:
                 config = yaml.load(fp.read()) or {}
         except Exception as ex:
-            logger.error('Can\'t load {0}: {1}'.format(options.cfg_file, unicode(ex)))
+            logger.error('Can\'t load {0}: {1}'.format(cfg_fn, unicode(ex)))
         else:
-            logger.info('Loaded configuration from {0}.'.format(options.cfg_file))
+            logger.info('Loaded configuration from {0}.'.format(cfg_fn))
 
     if options.var_file:
         template_vars = load_vars_from_pyfile(options.var_file)
@@ -96,10 +101,10 @@ def start():
     # Изменяем sys.argv для обхода поведения behave<=1.2.3, который
     # всегда пытается получить опции из командной строки.
     # TODO: с выходом стабильной 1.2.4 поменять на передачу command_args
-    sys.argv = [sys.argv[0],] + behave_args
+    sys.argv = [sys.argv[0], ] + behave_args
     behave_cfg = Configuration()
     if not behave_cfg.format:
-        behave_cfg.format = ['pretty',]
+        behave_cfg.format = ['pretty', ]
 
     from behave.runner import Runner
     runner = Runner(behave_cfg)
@@ -115,9 +120,9 @@ def start():
             assert p_id in plugins, 'Unknown plugin: {}!'.format(p_id)
             plugin = plugins[p_id]
 
-            # Подключаем ещё один набор функций окружения. С точки зрения behave'а,
-            # это будет одна функция, которая в свою очередь по порядку будет вызывать
-            # обработчики _каждого_ плагина.
+            # Подключаем ещё один набор функций окружения. С точки зрения
+            # behave'а, это будет одна функция, которая в свою очередь
+            # по порядку будет вызывать обработчики _каждого_ плагина.
             logger.info('Loading plugin "{}"...'.format(p_id))
             custom_hooks = plugin.prepare_environment(plugin_configs.get(p_id, {}))
             logger.debug('Plugin "{}" sets hooks: {}'.format(p_id, ', '.join(custom_hooks.keys())))

@@ -5,7 +5,7 @@ from jinja2 import Environment
 import imp
 import sys
 
-from log import logger
+from wellbehaved.log import logger
 
 
 class TemplateImportHooker(object):
@@ -24,6 +24,7 @@ class TemplateImportHooker(object):
         :params vars: Переменные контекста для шаблонизатора.
         '''
         self.vars = vars or {}
+        self.path = None
         logger.debug("Template variables: {0}".format(vars))
 
     def find_module(self, name, path=None):

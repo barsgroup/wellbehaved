@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='wellbehaved',
-    version='0.1.2.0',
+    version='0.1.2.1',
     description='Simple wrapper for behave with added templating support.',
     author='Kirill Borisov',
     author_email='borisov@bars-open.ru',

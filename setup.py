@@ -3,8 +3,9 @@
 from setuptools import setup
 
 setup(
-    name='wellbehaved',
+    name='m3-wellbehaved',
     version='0.1.2.1',
+    license='MIT',
     description='Simple wrapper for behave with added templating support.',
     author='Kirill Borisov',
     author_email='bars@bars-open.ru',

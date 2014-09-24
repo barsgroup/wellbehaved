@@ -7,19 +7,21 @@ setup(
     version='0.1.2.1',
     description='Simple wrapper for behave with added templating support.',
     author='Kirill Borisov',
-    author_email='borisov@bars-open.ru',
-    url='http://src.bars-open.ru/py/m3/m3_contrib/wellbehaved',
+    author_email='bars@bars-open.ru',
+    url='https://bitbucket.org/barsgroup/wellbehaved',
     packages=[
         'wellbehaved',
         'wellbehaved.plugins'
     ],
     classifiers=[
-        'Programming Language :: Python :: 2.6',
-        'Framework :: Django',
-        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
-        'Topic :: Software Development :: Testing',
+        'Environment :: Web Environment',
+        'Natural Language :: Russian',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'License :: OSI Approved :: MIT License',
+        'Development Status :: 5 - Production/Stable',
     ],
     entry_points={
         'console_scripts': [
